@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viza Studio</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; overflow: hidden; background-color: #0d0d11; color: #ffffff; }
+        
+        /* 2-Column Studio Framework Shell */
+        .sidebar { width: 280px; background-color: #16161c; border-right: 2px solid #ffffff; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .editor-container { flex: 1; display: flex; flex-direction: column; background-color: #0d0d11; position: relative; }
+
+        /* Typography, Brand, and V-Logo Configuration */
+        .brand-wrapper { display: flex; align-items: center; gap: 12px; }
+        .viza-logo { font-size: 28px; font-weight: 900; color: #ffffff; text-shadow: 0 0 5px #ffffff, 0 0 15px rgba(255, 255, 255, 0.4); font-style: italic; letter-spacing: 4px; line-height: 1; }
+        .logo-v-icon { width: 32px; height: 32px; filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.6)); }
+
+        .sidebar h2 { font-size: 16px; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.6); font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; }
+        
+        /* Instruction Layout Boxes */
+        .instruction-card { background: #0d0d11; border: 1px solid #3a3a44; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .instruction-card p { font-size: 13px; line-height: 1.5; color: #e2e8f0; }
+        .prompt-box { background: #16161c; border-left: 3px solid #ffffff; padding: 10px; font-family: monospace; font-size: 12px; color: #a1a1aa; border-radius: 0 6px 6px 0; word-break: break-word; }
+
+        /* Action Controls Buttons Bar */
+        .editor-header { height: 60px; background-color: #16161c; border-bottom: 2px solid #ffffff; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 900; font-size: 14px; border: none; transition: all 0.15s ease; }
+        .btn:active { transform: scale(0.97); }
+
+        .clear-btn { background-color: #0d0d11; color: #ffffff; border: 1px solid #ffffff; padding: 6px 14px; }
+        .clear-btn:hover { background-color: #16161c; }
+
+        .run-btn { background-color: #10b981; color: white; box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+        .run-btn:hover { background-color: #059669; }
+
+        .save-btn { background-color: #ffffff; color: #0d0d11; box-shadow: 0 0 12px #ffffff; }
+        .save-btn:hover { background-color: #e4e4e7; }
+
+        /* Main Workspace Canvas */
+        .editor-main { flex: 1; display: flex; padding: 20px; position: relative; }
+        .line-numbers { width: 35px; color: #4a4a5a; font-family: monospace; text-align: right; padding-right: 15px; user-select: none; line-height: 1.6; font-size: 16px; font-weight: bold; border-right: 2px solid #ffffff; margin-right: 15px; }
+        .code-textarea { flex: 1; background: transparent; border: none; color: #ffffff; font-family: monospace; font-size: 16px; resize: none; outline: none; line-height: 1.6; }
+
+        /* Overlay Pop-up Live View Preview Window */
+        .preview-overlay {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            background-color: #0d0d11;
+            border-radius: 12px;
+            border: 2px solid #10b981;
+            display: none; 
+            flex-direction: column;
+            z-index: 100;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+        }
+        .preview-header {
+            background-color: #10b981;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .close-preview-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .close-preview-btn:hover { background: #dc2626; }
+        .preview-frame {
+            width: 100%;
+            flex: 1;
+            border: none;
+            background: #ffffff; 
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Column: Code Guide Instruction Manual Panel -->
+    <div class="sidebar">
+        <div>
+            <h2>📘 How to Get Code</h2>
+            <p style="font-size: 11px; color: #8a8a93; font-weight: bold; margin-top: 2px;">Follow these steps to generate perfect code chunks:</p>
+        </div>
+        
+        <div class="instruction-card">
+            <p><strong>Step 1: Ask an AI Chatbot</strong></p>
+            <p>Open ChatGPT, Claude, or your preferred AI assistant and tell it exactly what you want to create.</p>
+        </div>
+
+        <div class="instruction-card">
+            <p><strong>Step 2: Copy This Golden Rule</strong></p>
+            <p>To make sure the AI gives you clean code that works instantly without annoying chatter, paste this instruction at the end of your message:</p>
+            <div class="prompt-box">
+                "Output ONLY a single block of valid HTML/CSS/JS code. Do not include markdown code block wrappers (like ```html), explanations, or introduction text. Start directly with the code."
+            </div>
+        </div>
+
+        <div class="instruction-card">
+            <p><strong>Step 3: Paste and Run</strong></p>
+            <p>Copy the code generated by the AI, paste it right into the VIZA canvas, and hit "Run Project" to watch it work!</p>
+        </div>
+    </div>
+
+    <!-- Right Column: Code Canvas Workspace -->
+    <div class="editor-container">
+        <div class="editor-header">
+            <div class="brand-wrapper">
+                <svg class="logo-v-icon" viewBox="0 0 100 100" fill="none" xmlns="http://w3.org">
+                    <path d="M10 15 L43 85 L57 85 L90 15 L74 15 L50 67 L26 15 Z" fill="#ffffff" />
+                </svg>
+                <div class="viza-logo">VIZA</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn clear-btn" id="clearBtn">Clear</button>
+                <button class="btn run-btn" id="runBtn">Run Project ▶</button>
+                <button class="btn save-btn" id="saveBtn">Save Project 💾</button>
+            </div>
+        </div>
+        <div class="editor-main">
+            <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</div>
+            <textarea class="code-textarea" id="editor" placeholder="<!-- Paste your external AI-generated code here... -->"></textarea>
+        </div>
+
+        <!-- Pop-up Preview Window Components Area -->
+        <div id="previewOverlay" class="preview-overlay">
+            <div class="preview-header">
+                <span>🖥️ Live Project Preview Window</span>
+                <button id="closePreview" class="close-preview-btn">Close View ✕</button>
+            </div>
+            <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-modals"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // DOM element target mappings
+        var runBtn = document.getElementById('runBtn');
+        var saveBtn = document.getElementById('saveBtn');
+        var clearBtn = document.getElementById('clearBtn');
+        var editor = document.getElementById('editor');
+        
+        var previewOverlay = document.getElementById('previewOverlay');
+        var previewFrame = document.getElementById('previewFrame');
+        var closePreview = document.getElementById('closePreview');
+
+        // RUN PROJECT: Compiles content live inside the iframe sandboxed modal overlay
+        runBtn.onclick = function() {
+            var userCode = editor.value;
+            if (!userCode.trim()) {
+                alert("Please paste or write some code into the workspace editor first!");
+                return;
+            }
+            previewFrame.srcdoc = userCode;
+            previewOverlay.style.display = 'flex';
+        };
+
+        // CLOSE PREVIEW: Resets viewport context strings and closes style visibility
+        closePreview.onclick = function() {
+            previewOverlay.style.display = 'none';
+            previewFrame.srcdoc = '';
+        };
+
+        // SAVE PROJECT: Converts raw text buffer content strings into downloadable browser blobs
+        saveBtn.onclick = function() {
+            var userCode = editor.value;
+            if (!userCode.trim()) {
+                alert("There is no code in the workspace to save!");
+                return;
+            }
+            
+            var blob = new Blob([userCode], { type: 'text/html' });
+            var url = URL.createObjectURL(blob);
+            
+            var downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'viza-project.html';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+        };
+
+        // CLEAR ACTION: Flush code input lines block container mapping
+        clearBtn.onclick = function() {
+            if (confirm("Clear code workspace canvas?")) {
+                editor.value = "";
+            }
+        };
+    </script>
+</body>
+</html>
+
